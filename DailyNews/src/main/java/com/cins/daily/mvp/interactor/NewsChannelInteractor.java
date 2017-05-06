@@ -6,7 +6,7 @@ import com.cins.daily.mvp.entity.NewsChannelTable;
 import rx.Subscription;
 
 /**
- * Created by Eric on 2017/1/20.
+ * Create by threelu on 2017/1/20.
  */
 
 public interface NewsChannelInteractor<T> {

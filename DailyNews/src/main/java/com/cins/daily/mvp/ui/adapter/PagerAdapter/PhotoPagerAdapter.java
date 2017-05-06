@@ -9,7 +9,7 @@ import com.cins.daily.mvp.ui.fragment.PhotoDetailFragment;
 import java.util.List;
 
 /**
- * Created by Eric on 2017/2/10.
+ * Create by threelu on 2017/2/10.
  */
 public class PhotoPagerAdapter extends FragmentStatePagerAdapter {
     private List<PhotoDetailFragment> mFragmentList;

@@ -7,7 +7,7 @@ import org.greenrobot.greendao.annotation.NotNull;
 import org.greenrobot.greendao.annotation.Generated;
 
 /**
- * Created by Eric on 2017/2/3.
+ * Create by threelu on 2017/2/3.
  */
 @Entity
 public class NewsChannelTable {

@@ -26,7 +26,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by Eric on 2017/1/19.
+ * Create by threelu on 2017/1/19.
  */
 
 public class NewsChannelAdapter extends BaseRecyclerViewAdapter<NewsChannelTable> implements

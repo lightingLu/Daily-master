@@ -11,7 +11,7 @@ import com.cins.daily.mvp.ui.fragment.NewsListFragment;
 import dagger.Component;
 
 /**
- * Created by Eric on 2017/1/19.
+ * Create by threelu on 2017/1/19.
  */
 @PerFragment
 @Component(dependencies = ApplicationComponent.class, modules = FragmentModule.class)

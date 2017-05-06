@@ -17,7 +17,7 @@ import rx.Subscriber;
 import rx.Subscription;
 
 /**
- * Created by Eric on 2017/1/15.
+ * Create by threelu on 2017/1/15.
  */
 
 public class NewsInteractorImpl implements NewsInteractor<List<NewsChannelTable>> {

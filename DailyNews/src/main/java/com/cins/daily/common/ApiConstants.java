@@ -1,7 +1,7 @@
 package com.cins.daily.common;
 
 /**
- * Created by Eric on 2017/1/16.
+ * Created by threelu on 2017/1/16.
  */
 
 public class ApiConstants {

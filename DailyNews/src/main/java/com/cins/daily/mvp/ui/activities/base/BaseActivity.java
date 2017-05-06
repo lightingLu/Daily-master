@@ -4,8 +4,12 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
@@ -15,13 +19,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVFile;
+import com.avos.avoscloud.AVUser;
+import com.avos.avoscloud.GetDataCallback;
+import com.avos.avoscloud.ProgressCallback;
+import com.avos.avoscloud.SaveCallback;
 import com.cins.daily.App;
 import com.cins.daily.R;
 import com.cins.daily.annotation.BindValues;
@@ -29,9 +42,9 @@ import com.cins.daily.common.Constants;
 import com.cins.daily.di.component.ActivityComponent;
 import com.cins.daily.di.component.DaggerActivityComponent;
 import com.cins.daily.di.module.ActivityModule;
-import com.cins.daily.mvp.entity.NewsChannelTable;
 import com.cins.daily.mvp.presenter.base.BasePresenter;
 import com.cins.daily.mvp.ui.activities.AboutActivity;
+import com.cins.daily.mvp.ui.activities.LoginInActivity;
 import com.cins.daily.mvp.ui.activities.NewsActivity;
 import com.cins.daily.mvp.ui.activities.NewsDetailActivity;
 import com.cins.daily.utils.MyUtils;
@@ -41,23 +54,32 @@ import com.readystatesoftware.systembartint.SystemBarTintManager;
 import com.socks.library.KLog;
 import com.squareup.leakcanary.RefWatcher;
 
-import java.util.List;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.util.HashMap;
 
 import butterknife.ButterKnife;
 import rx.Subscription;
 
 /**
- * Created by Eric on 2017/1/16.
+ * Created by threelu on 2017/1/16.
  */
 public abstract class BaseActivity<T extends BasePresenter> extends AppCompatActivity {
     protected ActivityComponent mActivityComponent;
     private boolean mIsChangeTheme;
     public Activity mActivity;
+    View headerView;
+    ImageView userhead;
 
     public ActivityComponent getActivityComponent() {
         return mActivityComponent;
     }
 
+    private static final int PHOTO_REQUEST_CAREMA = 1;// 拍照
+    private static final int PHOTO_REQUEST_GALLERY = 2;// 从相册中选择
+    private static final int PHOTO_REQUEST_CUT = 3;// 结果
+    private static final String PHOTO_FILE_NAME = "temp_photo.jpg";
+    private File tempFile;
     private WindowManager mWindowManager = null;
     private View mNightView = null;
     private boolean mIsAddedView;
@@ -100,12 +122,167 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
             //初始化Drawerlayout,做一些侧边栏的操作
             initDrawerLayout();
         }
+        initUser();
+        choseHeadPortraid();
         if (mPresenter != null) {
             mPresenter.onCreate();
         }
-//白天的主题
+        //白天的主题
         initNightModeSwitch();
     }
+
+    private void choseHeadPortraid() {
+        userhead = (ImageView) headerView.findViewById(R.id.user_headicon);
+        userhead.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent2 = new Intent(Intent.ACTION_PICK);
+                intent2.setType("image/*");
+                // 开启一个带有返回值的Activity，请求码为PHOTO_REQUEST_GALLERY
+                startActivityForResult(intent2, PHOTO_REQUEST_GALLERY);
+            }
+        });
+    }
+
+    /*
+        * 剪切图片
+        */
+    private void crop(Uri uri) {
+        // 裁剪图片意图
+        Intent intent = new Intent("com.android.camera.action.CROP");
+        intent.setDataAndType(uri, "image/*");
+        intent.putExtra("crop", "true");
+        // 裁剪框的比例，1：1
+        intent.putExtra("aspectX", 1);
+        intent.putExtra("aspectY", 1);
+        // 裁剪后输出图片的尺寸大小
+        intent.putExtra("outputX", 250);
+        intent.putExtra("outputY", 250);
+        intent.putExtra("outputFormat", "JPEG");// 图片格式
+        intent.putExtra("noFaceDetection", true);// 取消人脸识别
+        intent.putExtra("return-data", true);
+        // 开启一个带有返回值的Activity，请求码为PHOTO_REQUEST_CUT
+        startActivityForResult(intent, PHOTO_REQUEST_CUT);
+    }
+
+    /*
+         * 判断sdcard是否被挂载
+         */
+    private boolean hasSdcard() {
+        if (Environment.getExternalStorageState().equals(
+                Environment.MEDIA_MOUNTED)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PHOTO_REQUEST_GALLERY) {
+            // 从相册返回的数据
+            if (data != null) {
+                // 得到图片的全路径
+                Uri uri = data.getData();
+                crop(uri);
+            }
+
+        } else if (requestCode == PHOTO_REQUEST_CAREMA) {
+            // 从相机返回的数据
+            if (hasSdcard()) {
+                crop(Uri.fromFile(tempFile));
+            } else {
+                Toast.makeText(this, "未找到存储卡，无法存储照片！", Toast.LENGTH_SHORT).show();
+            }
+
+        } else if (requestCode == PHOTO_REQUEST_CUT) {//剪切图片
+            // 从剪切图片返回的数据
+            if (data != null) {
+                Bitmap bitmap = data.getParcelableExtra("data");
+                this.userhead.setImageBitmap(bitmap);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+                final AVFile files = new AVFile("usehead.png", baos.toByteArray());
+                files.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(AVException e) {
+                        if (null == e) {
+                            String url = files.getUrl();
+                            AVUser.getCurrentUser().put("userheadurl", url);
+                            AVUser.getCurrentUser().saveInBackground(new SaveCallback() {
+                                @Override
+                                public void done(AVException e) {
+                                    if (null == e) {
+                                        Log.v(Constants.LOGSTRING, "上传头像成功");
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+            try {
+
+                // 将临时文件删除
+                tempFile.delete();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+
+    private void initUser() {//初始化用户
+        AVUser currentUser = AVUser.getCurrentUser();
+        if (currentUser != null) {
+            String headurl = (String) currentUser.get("userheadurl");
+            TextView tvUser = (TextView) headerView.findViewById(R.id.username_tv);
+            tvUser.setText(currentUser.getUsername());
+            if (null != headurl) {
+                AVFile hfile = new AVFile("usehead.png", headurl, new HashMap<String, Object>());
+                hfile.getDataInBackground(new GetDataCallback() {
+                    @Override
+                    public void done(byte[] bytes, AVException e) {
+                        Bitmap bitmap = getPicFromBytes(bytes, null);
+                        userhead.setImageBitmap(bitmap);
+                    }
+                }, new ProgressCallback() {
+                    @Override
+                    public void done(Integer integer) {
+                        // 下载进度数据，integer 介于 0 和 100。
+                    }
+                });
+            }
+        } else {
+            Log.v(Constants.LOGSTRING, "用户为空,需要登录");
+        }
+
+
+    }
+
+    /**
+     * 字节数组转bitmap
+     *
+     * @param bytes
+     * @param opts
+     * @return
+     */
+    public static Bitmap getPicFromBytes(byte[] bytes,
+                                         BitmapFactory.Options opts) {
+        if (bytes != null) {
+            if (opts != null) {
+                return BitmapFactory.decodeByteArray(bytes, 0, bytes.length,
+                        opts);
+            } else {
+                return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            }
+        }
+        return null;
+    }
+
+
 
     private void initAnnotation() {
         if (getClass().isAnnotationPresent(BindValues.class)) {
@@ -181,6 +358,8 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
                 public boolean onNavigationItemSelected(MenuItem item) {
                     switch (item.getItemId()) {
                         case R.id.nav_news:
+                            Log.d(Constants.LOGSTRING, "新闻");
+
                             mClass = NewsActivity.class;
                             break;
                         //TODO 此处是视频和照片相关的点击操作
@@ -195,6 +374,7 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
                             break;
                         case R.id.nav_night_mode:
                             break;
+
                     }
                     mDrawerLayout.closeDrawer(GravityCompat.START);
                     return false;
@@ -202,6 +382,16 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
             });
         }
 
+        headerView = navView.getHeaderView(0);
+
+        headerView.findViewById(R.id.username_tv).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDrawerLayout.closeDrawer(GravityCompat.START);
+                Intent intent = new Intent(BaseActivity.this, LoginInActivity.class);
+                startActivity(intent);
+            }
+        });
         mDrawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
             @Override
             public void onDrawerClosed(View drawerView) {

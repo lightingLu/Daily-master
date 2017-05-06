@@ -25,7 +25,7 @@ import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 /**
- * Created by Eric on 2017/1/21.
+ * Create by threelu on 2017/1/21.
  */
 
 public class SplashActivity extends AppCompatActivity {

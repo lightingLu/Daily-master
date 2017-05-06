@@ -23,7 +23,7 @@ import retrofit2.adapter.rxjava.HttpException;
 import rx.Subscription;
 
 /**
- * Created by Eric on 2017/1/17.
+ * Create by threelu on 2017/1/17.
  */
 
 public class MyUtils {

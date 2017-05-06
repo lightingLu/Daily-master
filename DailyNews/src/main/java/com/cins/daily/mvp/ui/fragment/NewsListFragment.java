@@ -46,7 +46,7 @@ import rx.functions.Action1;
 import static android.support.v7.widget.RecyclerView.LayoutManager;
 
 /**
- * Created by Eric on 2017/1/16.
+ * Create by threelu on 2017/1/16.
  */
 public class NewsListFragment extends BaseFragment implements NewsListView, NewsListAdapter.OnNewsListItemClickListener,
         SwipeRefreshLayout.OnRefreshListener {

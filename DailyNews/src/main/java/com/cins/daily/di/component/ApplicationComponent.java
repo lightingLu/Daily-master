@@ -9,7 +9,7 @@ import com.cins.daily.di.scope.PerApp;
 import dagger.Component;
 
 /**
- * Created by Eric on 2017/1/19.
+ * Create by threelu on 2017/1/19.
  */
 @PerApp
 @Component(modules = ApplicationModule.class)

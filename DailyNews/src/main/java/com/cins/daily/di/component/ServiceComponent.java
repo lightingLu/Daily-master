@@ -9,7 +9,7 @@ import com.cins.daily.di.scope.PerService;
 import dagger.Component;
 
 /**
- * Created by Eric on 2017/1/19.
+ * Create by threelu on 2017/1/19.
  */
 @PerService
 @Component(dependencies = ApplicationComponent.class, modules = ServiceModule.class)

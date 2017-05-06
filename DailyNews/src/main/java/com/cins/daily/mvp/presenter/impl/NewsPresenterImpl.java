@@ -13,7 +13,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 /**
- * Created by Eric on 2017/1/16.
+ * Create by threelu on 2017/1/16.
  */
 public class NewsPresenterImpl extends BasePresenterImpl<NewsView, List<NewsChannelTable>>
         implements NewsPresenter {

@@ -14,7 +14,7 @@ import com.cins.daily.listener.OnItemClickListener;
 import java.util.List;
 
 /**
- * Created by Eric on 2017/1/20.
+ * Create by threelu on 2017/1/20.
  */
 
 public class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {

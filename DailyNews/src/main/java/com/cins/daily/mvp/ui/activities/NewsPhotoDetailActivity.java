@@ -25,7 +25,7 @@ import butterknife.BindView;
 import rx.functions.Action1;
 
 /**
- * Created by Eric on 2017/2/10.
+ * Create by threelu on 2017/2/10.
  */
 
 public class NewsPhotoDetailActivity extends BaseActivity{

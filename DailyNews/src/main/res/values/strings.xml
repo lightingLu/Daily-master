@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">iDaily</string>
+    <string name="app_name">DailyNews</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -72,5 +72,12 @@
 
     <string name="splash_slogan">Go through the every bit of life</string>
     <string name="splash_version">V 1.0.0</string>
-    <string name="splash_copyright">Copyright &#169; 2017 iDaily All Rights Reserved\nPowered by Eric Jin</string>
+    <string name="splash_copyright">Copyright &#169; 2017 Daily All Rights Reserved\nPowered by Eric Jin</string>
+    <!--bottom sheet list-->
+    <string name="user_signature">逝者如斯夫，不舍昼夜</string>
+    <string name="user_name">点击登录</string>
+    <string name="title_activity_login_in">LoginInActivity</string>
+    <string name="login">登录</string>
+    <string name="regist">注册</string>
+
 </resources>

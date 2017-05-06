@@ -11,7 +11,7 @@ import javax.inject.Inject;
 
 
 /**
- * Created by Eric on 2017/1/18.
+ * Create by threelu on 2017/1/18.
  */
 
 public class NewsDetailPresenterImpl extends BasePresenterImpl<NewsDetailView, NewsDetail>

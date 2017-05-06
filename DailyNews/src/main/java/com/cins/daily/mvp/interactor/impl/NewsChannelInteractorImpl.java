@@ -24,7 +24,7 @@ import rx.Subscriber;
 import rx.Subscription;
 
 /**
- * Created by Eric on 2017/1/20.
+ * Create by threelu on 2017/1/20.
  */
 
 public class NewsChannelInteractorImpl implements NewsChannelInteractor<Map<Integer, List<NewsChannelTable>>> {

@@ -22,8 +22,7 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="BaseAppTheme.NoTrans">
-    </style>
+    <style name="BaseAppTheme.NoTrans"></style>
 
     <style name="BaseAppTheme.Trans">
         <item name="android:windowBackground">@android:color/transparent</item>
@@ -35,15 +34,16 @@
         <item name="android:windowFullscreen">true</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <!--用于splash-->
     <style name="FitSystemWindows">
         <item name="android:fitsSystemWindows">true</item>
         <item name="android:clipToPadding">false</item>
     </style>
+
     <style name="AppTheme.FullScreen" parent="BaseAppTheme">
         <item name="android:windowActionBar">false</item>
 
@@ -56,6 +56,9 @@
         <item name="@android:windowExitAnimation">@anim/fade_out</item>
     </style>
 
+    <style name="BaseAppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="BaseAppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 
 </resources>

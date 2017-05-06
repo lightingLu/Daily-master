@@ -16,7 +16,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 /**
- * Created by Eric on 2017/1/19.
+ * Create by threelu on 2017/1/19.
  */
 
 public class NewsChannelPresenterImpl extends BasePresenterImpl<NewsChannelView,

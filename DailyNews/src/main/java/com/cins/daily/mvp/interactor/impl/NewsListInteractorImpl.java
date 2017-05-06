@@ -22,7 +22,7 @@ import rx.functions.Func1;
 import rx.functions.Func2;
 
 /**
- * Created by Eric on 2017/1/17.
+ * Create by threelu on 2017/1/17.
  */
 
 public class NewsListInteractorImpl implements NewsListInteractor<List<NewsSummary>> {

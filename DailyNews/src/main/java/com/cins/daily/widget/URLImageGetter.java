@@ -27,7 +27,7 @@ import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
- * Created by Eric on 2017/1/18.
+ * Create by threelu on 2017/1/18.
  */
 
 public class URLImageGetter implements Html.ImageGetter {

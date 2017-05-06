@@ -30,7 +30,7 @@ import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
 /**
- * Created by Eric on 2017/1/20.
+ * Create by threelu on 2017/1/20.
  */
 
 public class PhotoDetailFragment extends BaseFragment {

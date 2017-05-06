@@ -3,7 +3,7 @@ package com.cins.daily.utils;
 import android.os.SystemClock;
 
 /**
- * Created by Eric on 2017/1/20.
+ * Create by threelu on 2017/1/20.
  */
 
 public class ClickUtil {

@@ -32,7 +32,7 @@ import butterknife.BindView;
 import rx.functions.Action1;
 
 /**
- * Created by Eric on 2017/1/19.
+ * Create by threelu on 2017/1/19.
  */
 
 public class NewsChannelActivity extends BaseActivity implements NewsChannelView {

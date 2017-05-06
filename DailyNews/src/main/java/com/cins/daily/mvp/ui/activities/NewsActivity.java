@@ -18,7 +18,6 @@ import com.cins.daily.annotation.BindValues;
 import com.cins.daily.common.Constants;
 import com.cins.daily.event.ChannelChangeEvent;
 import com.cins.daily.event.ScrollToTopEvent;
-
 import com.cins.daily.mvp.entity.NewsChannelTable;
 import com.cins.daily.mvp.presenter.impl.NewsPresenterImpl;
 import com.cins.daily.mvp.ui.activities.base.BaseActivity;
@@ -64,7 +63,9 @@ public class NewsActivity extends BaseActivity implements NewsView {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mSubscription = RxBus.getInstance().toObservable(ChannelChangeEvent.class)
+
+
+        mSubscription = RxBus. getInstance().toObservable(ChannelChangeEvent.class)
                 .subscribe(new Action1<ChannelChangeEvent>() {
                     @Override
                     public void call(ChannelChangeEvent channelChangeEvent) {

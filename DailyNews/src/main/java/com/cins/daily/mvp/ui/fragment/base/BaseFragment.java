@@ -19,7 +19,7 @@ import butterknife.ButterKnife;
 import rx.Subscription;
 
 /**
- * Created by Eric on 2017/1/16.
+ * Create by threelu on 2017/1/16.
  */
 
 public abstract class BaseFragment<T extends BasePresenter> extends Fragment {

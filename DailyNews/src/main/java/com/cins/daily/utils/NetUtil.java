@@ -9,7 +9,7 @@ import com.cins.daily.App;
 import com.cins.daily.R;
 
 /**
- * Created by Eric on 2017/1/17.
+ * Create by threelu on 2017/1/17.
  */
 
 public class NetUtil {

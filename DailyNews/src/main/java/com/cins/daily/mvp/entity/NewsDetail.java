@@ -3,7 +3,7 @@ package com.cins.daily.mvp.entity;
 import java.util.List;
 
 /**
- * Created by Eric on 2017/1/18.
+ * Create by threelu on 2017/1/18.
  */
 
 public class NewsDetail {

@@ -14,7 +14,7 @@ import retrofit2.http.Url;
 import rx.Observable;
 
 /**
- * Created by Eric on 2017/1/16.
+ * Create by threelu on 2017/1/16.
  */
 
 public interface NewsService {

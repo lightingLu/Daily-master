@@ -14,7 +14,7 @@ import com.cins.daily.mvp.ui.activities.NewsPhotoDetailActivity;
 import dagger.Component;
 
 /**
- * Created by Eric on 2017/1/19.
+ * Create by threelu on 2017/1/19.
  */
 @PerActivity
 @Component(dependencies = ApplicationComponent.class, modules = ActivityModule.class)

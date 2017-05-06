@@ -14,7 +14,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 /**
- * Created by Eric on 2017/1/17.
+ * Create by threelu on 2017/1/17.
  */
 
 public class NewsListPresenterImpl extends BasePresenterImpl<NewsListView, List<NewsSummary>>

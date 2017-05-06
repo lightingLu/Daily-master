@@ -50,7 +50,7 @@ import rx.Observable;
 import rx.Subscriber;
 
 /**
- * Created by Eric on 2017/1/16.
+ * Create by threelu on 2017/1/16.
  */
 public class NewsDetailActivity extends BaseActivity implements NewsDetailView {
     @BindView(R.id.news_detail_photo_iv)

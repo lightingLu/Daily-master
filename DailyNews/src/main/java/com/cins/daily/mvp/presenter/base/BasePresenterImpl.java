@@ -9,7 +9,7 @@ import com.cins.daily.utils.MyUtils;
 import rx.Subscription;
 
 /**
- * Created by Eric on 2017/1/17.
+ * Create by threelu on 2017/1/17.
  */
 public class BasePresenterImpl<T extends BaseView, E> implements BasePresenter, RequestCallBack<E> {
     protected T mView;

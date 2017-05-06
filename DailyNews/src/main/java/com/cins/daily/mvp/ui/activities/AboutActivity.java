@@ -13,7 +13,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by Eric on 2017/2/15.
+ * Create by threelu  on 2017/2/15.
  */
 
 public class AboutActivity extends BaseActivity {
@@ -44,21 +44,10 @@ public class AboutActivity extends BaseActivity {
                         .setCover(R.mipmap.profile_cover)
                         .setLinksAnimated(false)
                         .setDividerDashGap(13)
-                        .setName("Eric Jin")
-                        .setSubTitle("jinjianping2613@163.com")
+                        .setName("Three Lu")
+                        .setSubTitle("ludaguang0917@163.com")
                         .setLinksColumnsCount(4)
-                        .setBrief("I'm warmed of mobile technologies. Ideas maker, curious and nature lover.")
-                        .addGooglePlayStoreLink("")
-                        .addGitHubLink("spring2613")
-                        .addEmailLink("jinjianping2613@163.com")
-                        .addWebsiteLink("http://spring2613.github.io/")
-                        .addFiveStarsAction()
-                        .addMoreFromMeAction("Eric-Jin")
-                        .setVersionAsAppTitle()
-                        .addShareAction(R.string.app_name)
-                        .addUpdateAction()
-                        .setActionsColumnsCount(2)
-                        .addFeedbackAction("jinjianping2613@163.com")
+                        .setBrief("I'm warmed of mobile technologies.")
                         .addIntroduceAction((Intent) null)
                         .addHelpAction((Intent) null)
                         .addChangeLogAction((Intent) null)

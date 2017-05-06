@@ -7,7 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatDelegate;
+import android.util.Log;
 
+import com.avos.avoscloud.AVOSCloud;
 import com.cins.daily.common.Constants;
 import com.cins.daily.di.component.ApplicationComponent;
 import com.cins.daily.di.component.DaggerApplicationComponent;
@@ -25,7 +27,7 @@ import org.greenrobot.greendao.query.QueryBuilder;
 
 
 /**
- * Created by Eric on 2017/1/16.
+ * Create by threelu  on 2017/1/16.
  */
 public class App extends Application {
 
@@ -45,6 +47,7 @@ public class App extends Application {
         super.onCreate();
         sAppContext = this;
         initLeakCanary();
+        AVOSCloud.initialize(this,"nDvvF3bko0IEq8qt7yEDIzlB-gzGzoHsz","6FJzBgLaPhX67K5CWbypAUyz");
         initActivityLifecycleLogs();
         initStrictMode();
         initDayNightMode();
