@@ -37,7 +37,7 @@
             android:layout_marginRight="16dp"
             android:text="@string/action_add_to_bookmarks"
             android:gravity="center_vertical"
-            android:id="@+id/textView"
+            android:id="@+id/layout_article_collect"
             android:textColor="@color/textColorPrimary"/>
 
     </LinearLayout>

@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <!--允许读取手机状态 用于创建BmobInstallation-->
+    <!-- 允许读取手机状态 用于创建BmobInstallation -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
 
@@ -32,21 +32,23 @@
         </activity>
         <activity
             android:name=".mvp.ui.activities.NewsActivity"
-            android:theme="@style/BaseAppTheme.NoTrans"></activity>
+            android:theme="@style/BaseAppTheme.NoTrans" />
         <activity
             android:name=".mvp.ui.activities.NewsDetailActivity"
-            android:theme="@style/BaseAppTheme.NoTrans"></activity>
+            android:theme="@style/BaseAppTheme.NoTrans" />
         <activity
             android:name=".mvp.ui.activities.NewsChannelActivity"
-            android:theme="@style/BaseAppTheme.NoTrans"></activity>
+            android:theme="@style/BaseAppTheme.NoTrans" />
         <activity
             android:name=".mvp.ui.activities.NewsPhotoDetailActivity"
-            android:theme="@style/BaseAppTheme.NoTrans"></activity>
+            android:theme="@style/BaseAppTheme.NoTrans" />
         <activity android:name=".mvp.ui.activities.AboutActivity" />
         <activity
             android:name=".mvp.ui.activities.LoginInActivity"
             android:label="@string/title_activity_login_in"
-            android:theme="@style/BaseAppTheme"></activity>
+            android:theme="@style/BaseAppTheme" />
+        <activity android:name=".mvp.ui.activities.ScanNewsActivity" />
+        <activity android:name=".mvp.ui.activities.CollectionActivity"></activity>
     </application>
 
 </manifest>

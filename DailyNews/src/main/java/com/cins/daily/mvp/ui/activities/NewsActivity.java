@@ -2,6 +2,7 @@ package com.cins.daily.mvp.ui.activities;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -11,8 +12,18 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVFile;
+import com.avos.avoscloud.AVObject;
+import com.avos.avoscloud.AVUser;
+import com.avos.avoscloud.GetDataCallback;
+import com.avos.avoscloud.ProgressCallback;
+import com.avos.avoscloud.SaveCallback;
 import com.cins.daily.R;
 import com.cins.daily.annotation.BindValues;
 import com.cins.daily.common.Constants;
@@ -28,6 +39,7 @@ import com.cins.daily.utils.MyUtils;
 import com.cins.daily.utils.RxBus;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -63,17 +75,59 @@ public class NewsActivity extends BaseActivity implements NewsView {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
-        mSubscription = RxBus. getInstance().toObservable(ChannelChangeEvent.class)
+        mSubscription = RxBus.getInstance().toObservable(ChannelChangeEvent.class)
                 .subscribe(new Action1<ChannelChangeEvent>() {
                     @Override
                     public void call(ChannelChangeEvent channelChangeEvent) {
                         mNewsPresenter.onChannelDbChanged();
                     }
                 });
+        initUser();
+        choseHeadPortraid();
     }
 
+    private void choseHeadPortraid() {
+        userhead = (ImageView) headerView.findViewById(R.id.user_headicon);
+        userhead.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent2 = new Intent(Intent.ACTION_PICK);
+                intent2.setType("image/*");
+                // 开启一个带有返回值的Activity，请求码为PHOTO_REQUEST_GALLERY
+                startActivityForResult(intent2, PHOTO_REQUEST_GALLERY);
+            }
+        });
+    }
+
+    private void initUser() {//初始化用户
+        AVUser currentUser = AVUser.getCurrentUser();
+
+        if (currentUser != null) {
+            loginout.setText("退出");
+            String headurl = (String) currentUser.get("userheadurl");
+            TextView tvUser = (TextView) headerView.findViewById(R.id.username_tv);
+            tvUser.setText(currentUser.getUsername());
+            if (null != headurl) {
+                AVFile hfile = new AVFile("usehead.png", headurl, new HashMap<String, Object>());
+                hfile.getDataInBackground(new GetDataCallback() {
+                    @Override
+                    public void done(byte[] bytes, AVException e) {
+                        Bitmap bitmap = getPicFromBytes(bytes, null);
+                        userhead.setImageBitmap(bitmap);
+                    }
+                }, new ProgressCallback() {
+                    @Override
+                    public void done(Integer integer) {
+                        // 下载进度数据，integer 介于 0 和 100。
+                    }
+                });
+            }
+        } else {
+            Log.v(Constants.LOGSTRING, "用户为空,需要登录");
+        }
+
+
+    }
 
     @Override
     public int getLayoutId() {
@@ -109,10 +163,43 @@ public class NewsActivity extends BaseActivity implements NewsView {
     }
 
 
-   @Override
+    @Override
     public void initViewPager(List<NewsChannelTable> newsChannels) {
         final List<String> channelNames = new ArrayList<>();
+
         if (newsChannels != null) {
+            AVUser currentUser = AVUser.getCurrentUser();
+            if (null != currentUser) {
+                AVObject articleObject = new AVObject("UserTab");
+                articleObject.put("tab", newsChannels);
+                articleObject.put("tuser", currentUser);
+                articleObject.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(AVException e) {
+                        if (null == e) {
+                            Log.v(Constants.LOGSTRING, "新闻便签上传成功");
+                        }
+                    }
+                });
+            }
+//            if (null != AVUser.getCurrentUser()) {
+//                AVQuery<AVObject> commentQuery = new AVQuery<>("UserTab");
+//                commentQuery.orderByDescending("createdAt");
+//                commentQuery.limit(5);
+//                commentQuery.whereEqualTo("tuser", AVObject.createWithoutData("_User", AVUser.getCurrentUser().getObjectId()));
+//                commentQuery.findInBackground(new FindCallback<AVObject>() {
+//                    @Override
+//                    public void done(List<AVObject> list, AVException e) {
+//                        Log.v(Constants.LOGSTRING, "便签：" + list.get(0).get("tab"));
+//                        list.get(0).get("tab");
+////                            setNewsList(mynewsChannels, channelNames);
+////                            setViewPager(channelNames);
+//                    }
+//                });
+//            } else {
+//                setNewsList(newsChannels, channelNames);
+//                setViewPager(channelNames);
+//            }
             setNewsList(newsChannels, channelNames);
             setViewPager(channelNames);
         }
@@ -133,6 +220,7 @@ public class NewsActivity extends BaseActivity implements NewsView {
         bundle.putString(Constants.NEWS_ID, newsChannel.getNewsChannelId());
         bundle.putString(Constants.NEWS_TYPE, newsChannel.getNewsChannelType());
         bundle.putInt(Constants.CHANNEL_POSITION, newsChannel.getNewsChannelIndex());
+        Log.v(Constants.LOGSTRING, "id:" + newsChannel.getNewsChannelId() + "  type:" + newsChannel.getNewsChannelType() + "   index:" + newsChannel.getNewsChannelIndex());
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -200,4 +288,6 @@ public class NewsActivity extends BaseActivity implements NewsView {
     public static void start(Activity activity) {
         activity.startActivity(new Intent(activity, NewsActivity.class));
     }
+
+
 }

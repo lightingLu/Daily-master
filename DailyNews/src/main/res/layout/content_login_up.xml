@@ -106,7 +106,7 @@
         <TextView
             android:id="@+id/login_findpasswords"
             android:textColor="@color/base_msg_color"
-            android:text="找回密码"
+            android:text=""
             android:textSize="12dp"
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="20dp"

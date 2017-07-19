@@ -32,8 +32,6 @@ import android.widget.Toast;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVFile;
 import com.avos.avoscloud.AVUser;
-import com.avos.avoscloud.GetDataCallback;
-import com.avos.avoscloud.ProgressCallback;
 import com.avos.avoscloud.SaveCallback;
 import com.cins.daily.App;
 import com.cins.daily.R;
@@ -42,11 +40,14 @@ import com.cins.daily.common.Constants;
 import com.cins.daily.di.component.ActivityComponent;
 import com.cins.daily.di.component.DaggerActivityComponent;
 import com.cins.daily.di.module.ActivityModule;
+import com.cins.daily.mvp.entity.NewsSum;
 import com.cins.daily.mvp.presenter.base.BasePresenter;
 import com.cins.daily.mvp.ui.activities.AboutActivity;
+import com.cins.daily.mvp.ui.activities.CollectionActivity;
 import com.cins.daily.mvp.ui.activities.LoginInActivity;
 import com.cins.daily.mvp.ui.activities.NewsActivity;
 import com.cins.daily.mvp.ui.activities.NewsDetailActivity;
+import com.cins.daily.mvp.ui.activities.ScanNewsActivity;
 import com.cins.daily.utils.MyUtils;
 import com.cins.daily.utils.NetUtil;
 import com.cins.daily.utils.SharedPreferencesUtil;
@@ -56,7 +57,9 @@ import com.squareup.leakcanary.RefWatcher;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.util.HashMap;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.ButterKnife;
 import rx.Subscription;
@@ -68,16 +71,19 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
     protected ActivityComponent mActivityComponent;
     private boolean mIsChangeTheme;
     public Activity mActivity;
-    View headerView;
-    ImageView userhead;
+    public View headerView;
+    public ImageView userhead;
+    List<NewsSum> scanlist;
+    public TextView loginout;
+    public TextView login;
 
     public ActivityComponent getActivityComponent() {
         return mActivityComponent;
     }
 
-    private static final int PHOTO_REQUEST_CAREMA = 1;// 拍照
-    private static final int PHOTO_REQUEST_GALLERY = 2;// 从相册中选择
-    private static final int PHOTO_REQUEST_CUT = 3;// 结果
+    public static final int PHOTO_REQUEST_CAREMA = 1;// 拍照
+    public static final int PHOTO_REQUEST_GALLERY = 2;// 从相册中选择
+    public static final int PHOTO_REQUEST_CUT = 3;// 结果
     private static final String PHOTO_FILE_NAME = "temp_photo.jpg";
     private File tempFile;
     private WindowManager mWindowManager = null;
@@ -100,6 +106,7 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        scanlist = new ArrayList<>();
         mActivity = this;
         KLog.i(getClass().getSimpleName());
         initAnnotation();
@@ -119,11 +126,10 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         initToolBar();
         initViews();
         if (mIsHasNavigationView) {
-            //初始化Drawerlayout,做一些侧边栏的操作
+            //
+            // 初始化Drawerlayout,做一些侧边栏的操作
             initDrawerLayout();
         }
-        initUser();
-        choseHeadPortraid();
         if (mPresenter != null) {
             mPresenter.onCreate();
         }
@@ -131,18 +137,6 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         initNightModeSwitch();
     }
 
-    private void choseHeadPortraid() {
-        userhead = (ImageView) headerView.findViewById(R.id.user_headicon);
-        userhead.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent2 = new Intent(Intent.ACTION_PICK);
-                intent2.setType("image/*");
-                // 开启一个带有返回值的Activity，请求码为PHOTO_REQUEST_GALLERY
-                startActivityForResult(intent2, PHOTO_REQUEST_GALLERY);
-            }
-        });
-    }
 
     /*
         * 剪切图片
@@ -234,34 +228,6 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
     }
 
 
-    private void initUser() {//初始化用户
-        AVUser currentUser = AVUser.getCurrentUser();
-        if (currentUser != null) {
-            String headurl = (String) currentUser.get("userheadurl");
-            TextView tvUser = (TextView) headerView.findViewById(R.id.username_tv);
-            tvUser.setText(currentUser.getUsername());
-            if (null != headurl) {
-                AVFile hfile = new AVFile("usehead.png", headurl, new HashMap<String, Object>());
-                hfile.getDataInBackground(new GetDataCallback() {
-                    @Override
-                    public void done(byte[] bytes, AVException e) {
-                        Bitmap bitmap = getPicFromBytes(bytes, null);
-                        userhead.setImageBitmap(bitmap);
-                    }
-                }, new ProgressCallback() {
-                    @Override
-                    public void done(Integer integer) {
-                        // 下载进度数据，integer 介于 0 和 100。
-                    }
-                });
-            }
-        } else {
-            Log.v(Constants.LOGSTRING, "用户为空,需要登录");
-        }
-
-
-    }
-
     /**
      * 字节数组转bitmap
      *
@@ -281,7 +247,6 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         }
         return null;
     }
-
 
 
     private void initAnnotation() {
@@ -359,16 +324,17 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
                     switch (item.getItemId()) {
                         case R.id.nav_news:
                             Log.d(Constants.LOGSTRING, "新闻");
-
                             mClass = NewsActivity.class;
                             break;
-                        //TODO 此处是视频和照片相关的点击操作
-                        /*case R.id.nav_photo:
-                            //mClass = PhotoActivity.class;
+                        //TODO 此处是收藏和浏览记录相关的点击操作
+                        case R.id.nav_collection:
+//                            mClass = PhotoActivity.class;
+                            mClass = ScanNewsActivity.class;
+
                             break;
-                        case R.id.nav_video:
-                            Toast.makeText(BaseActivity.this, "施工准备中...", Toast.LENGTH_SHORT).show();
-                            break;*/
+                        case R.id.nav_scan:
+                            mClass = CollectionActivity.class;
+                            break;
                         case R.id.nav_about:
                             mClass = AboutActivity.class;
                             break;
@@ -383,13 +349,32 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         }
 
         headerView = navView.getHeaderView(0);
+        login = (TextView) headerView.findViewById(R.id.username_tv);
+        login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (AVUser.getCurrentUser()!=null){
+                    Toast.makeText(BaseActivity.this, "当前用户已经登录", Toast.LENGTH_SHORT).show();
+                }else {
+                    mDrawerLayout.closeDrawer(GravityCompat.START);
+                    Intent intent = new Intent(BaseActivity.this, LoginInActivity.class);
+                    startActivity(intent);
+                }
 
-        headerView.findViewById(R.id.username_tv).setOnClickListener(new View.OnClickListener() {
+            }
+        });
+        loginout = (TextView) headerView.findViewById(R.id.user_loginout);
+        loginout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mDrawerLayout.closeDrawer(GravityCompat.START);
-                Intent intent = new Intent(BaseActivity.this, LoginInActivity.class);
-                startActivity(intent);
+                if (AVUser.getCurrentUser() != null) {
+                    AVUser.logOut();// 清除缓存用户对象
+                    if (AVUser.getCurrentUser()==null){
+                        loginout.setText("逝者如斯夫，不舍昼夜");
+                        login.setText("点击登录");
+                    }
+                }
             }
         });
         mDrawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
@@ -397,10 +382,18 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
                 if (mClass != null) {
-                    Intent intent = new Intent(BaseActivity.this, mClass);
-                    // 此标志用于启动一个Activity的时候，若栈中存在此Activity实例，则把它调到栈顶。不创建多一个
+                    if (mClass == ScanNewsActivity.class) {
+                        Intent intent = new Intent(BaseActivity.this, mClass);
+                        if (AVUser.getCurrentUser() == null) {
+                            intent.putExtra("scanlist", (Serializable) scanlist);
+                        }
+                        startActivity(intent);
+                    } else {
+                        Intent intent = new Intent(BaseActivity.this, mClass);
+                        // 此标志用于启动一个Activity的时候，若栈中存在此Activity实例，则把它调到栈顶。不创建多一个
 //                    intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                    startActivity(intent);
+                        startActivity(intent);
+                    }
                     overridePendingTransition(0, 0);//activity退出的时候实现动画淡入淡出的效果
                     mClass = null;
                 }
@@ -503,5 +496,13 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+    }
+
+    public void setScanSummery(NewsSum summary) {
+        scanlist.add(summary);
+    }
+
+    public List<NewsSum> getScanSummery() {
+        return scanlist;
     }
 }

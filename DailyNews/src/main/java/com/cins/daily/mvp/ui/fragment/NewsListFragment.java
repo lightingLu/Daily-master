@@ -20,15 +20,21 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVObject;
+import com.avos.avoscloud.AVUser;
+import com.avos.avoscloud.SaveCallback;
 import com.cins.daily.R;
 import com.cins.daily.common.Constants;
 import com.cins.daily.common.LoadNewsType;
 import com.cins.daily.event.ScrollToTopEvent;
 import com.cins.daily.mvp.entity.NewsPhotoDetail;
+import com.cins.daily.mvp.entity.NewsSum;
 import com.cins.daily.mvp.entity.NewsSummary;
 import com.cins.daily.mvp.presenter.impl.NewsListPresenterImpl;
 import com.cins.daily.mvp.ui.activities.NewsDetailActivity;
 import com.cins.daily.mvp.ui.activities.NewsPhotoDetailActivity;
+import com.cins.daily.mvp.ui.activities.base.BaseActivity;
 import com.cins.daily.mvp.ui.adapter.NewsListAdapter;
 import com.cins.daily.mvp.ui.fragment.base.BaseFragment;
 import com.cins.daily.mvp.view.NewsListView;
@@ -39,6 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.OnClick;
 import rx.functions.Action1;
@@ -58,7 +65,7 @@ public class NewsListFragment extends BaseFragment implements NewsListView, News
     SwipeRefreshLayout mSwipeRefreshLayout;
     @BindView(R.id.empty_view)
     TextView mEmptyView;
-
+    BaseActivity activity;
     @Inject
     NewsListAdapter mNewsListAdapter;
     @Inject
@@ -70,6 +77,8 @@ public class NewsListFragment extends BaseFragment implements NewsListView, News
     private String mNewsType;
 
     private boolean mIsAllLoaded;
+    List<NewsSummary> scanList;
+    private AVUser currentUser;
 
     @Override
     public void initInjector() {
@@ -78,6 +87,9 @@ public class NewsListFragment extends BaseFragment implements NewsListView, News
 
     @Override
     public void initViews(View view) {
+        currentUser = AVUser.getCurrentUser();
+        scanList = new ArrayList<>();
+        activity = (BaseActivity) getActivity();
         initSwipeRefreshLayout();
         initRecyclerView();
         initPresenter();
@@ -285,7 +297,29 @@ public class NewsListFragment extends BaseFragment implements NewsListView, News
 
     @NonNull
     private Intent setIntent(int position) {
+
         List<NewsSummary> newsSummaryList = mNewsListAdapter.getList();
+        NewsSum news =new NewsSum();
+        news.setPtime(newsSummaryList.get(position).getPtime());
+        news.setDigest(newsSummaryList.get(position).getDigest());
+        news.setImgsrc(newsSummaryList.get(position).getImgsrc());
+        news.setTitle(newsSummaryList.get(position).getTitle());
+        activity.setScanSummery(news);
+        if (null!=currentUser){
+            AVObject articleObject = new AVObject("ScanNews");
+            articleObject.put("simgurl", news.getImgsrc());
+            articleObject.put("stitle", news.getTitle());
+            articleObject.put("sbelong", currentUser);
+            articleObject.put("sTime", news.getPtime());
+            articleObject.put("sdigist", news.getDigest());
+            articleObject.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(AVException e) {
+                    if (null == e) {
+                    }
+                }
+            });
+        }
 
         Intent intent = new Intent(mActivity, NewsDetailActivity.class);
         intent.putExtra(Constants.NEWS_POST_ID, newsSummaryList.get(position).getPostid());

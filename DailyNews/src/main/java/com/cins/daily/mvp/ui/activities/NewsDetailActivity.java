@@ -14,13 +14,19 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVObject;
+import com.avos.avoscloud.AVUser;
+import com.avos.avoscloud.SaveCallback;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DecodeFormat;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -78,6 +84,12 @@ public class NewsDetailActivity extends BaseActivity implements NewsDetailView {
     private URLImageGetter mUrlImageGetter;
     private String mNewsTitle;
     private String mShareLink;
+    String newsSource;
+    String newsTime;
+    String newsBody;
+    String newsImgSrc;
+    AVUser currentUser;
+    private String digest;
 
     @Override
     public int getLayoutId() {
@@ -107,16 +119,19 @@ public class NewsDetailActivity extends BaseActivity implements NewsDetailView {
     public void setNewsDetail(NewsDetail newsDetail) {
         mShareLink = newsDetail.getShareLink();
         mNewsTitle = newsDetail.getTitle();
-        String newsSource = newsDetail.getSource();
-        String newsTime = MyUtils.formatDate(newsDetail.getPtime());
-        String newsBody = newsDetail.getBody();
-        String NewsImgSrc = getImgSrcs(newsDetail);
+        newsSource = newsDetail.getSource();
+        digest = newsDetail.getDigest();
+
+        newsTime = MyUtils.formatDate(newsDetail.getPtime());
+        newsBody = newsDetail.getBody();
+        newsImgSrc = getImgSrcs(newsDetail);
+        Log.v(Constants.LOGSTRING,"digist:"+digest);
 
 
         setToolBarLayout(mNewsTitle);
 //        mNewsDetailTitleTv.setText(newsTitle);
         mNewsDetailFromTv.setText(getString(R.string.news_from, newsSource, newsTime));
-        setNewsDetailPhotoIv(NewsImgSrc);
+        setNewsDetailPhotoIv(newsImgSrc);
         setNewsDetailBodyTv(newsDetail, newsBody);
     }
 
@@ -226,14 +241,27 @@ public class NewsDetailActivity extends BaseActivity implements NewsDetailView {
             final BottomSheetDialog dialog = new BottomSheetDialog(this);
             final View view = getLayoutInflater().inflate(R.layout.menu_more_actions_sheet, null);
 
-           view.findViewById(R.id.layout_open_in_browser).setOnClickListener(new View.OnClickListener() {
+            view.findViewById(R.id.layout_open_in_browser).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     dialog.dismiss();
                     openByBrowser();
                 }
             });
+            view.findViewById(R.id.layout_article_collect).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                    currentUser = AVUser.getCurrentUser();
+                    if (null == currentUser) {
+                        Toast.makeText(mActivity, "请登录", Toast.LENGTH_SHORT).show();
+                    } else {
+                        collectArticle();
+                    }
 
+
+                }
+            });
             view.findViewById(R.id.layout_copy_link).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -241,11 +269,31 @@ public class NewsDetailActivity extends BaseActivity implements NewsDetailView {
                     copyLink();
                 }
             });
+
             dialog.setContentView(view);
             dialog.show();
         }
         return true;
         //return super.onOptionsItemSelected(item);
+    }
+
+    private void collectArticle() {
+        AVObject articleObject = new AVObject("Article");
+        articleObject.put("aurl", mShareLink);
+        articleObject.put("aimgurl", newsImgSrc);
+        articleObject.put("atitle", mNewsTitle);
+        articleObject.put("abelong", currentUser);
+        articleObject.put("atime", newsTime);
+        articleObject.put("adigist", digest);
+
+        articleObject.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(AVException e) {
+                if (null == e) {
+                    Toast.makeText(mActivity, "收藏成功", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
 
@@ -279,7 +327,7 @@ public class NewsDetailActivity extends BaseActivity implements NewsDetailView {
             manager.setPrimaryClip(clipData);
             Snackbar.make(getWindow().getDecorView(), R.string.copied_to_clipboard, Snackbar.LENGTH_SHORT).show();
         } else {
-            Snackbar.make(getWindow().getDecorView(),R.string.copied_to_clipboard_failed,Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(getWindow().getDecorView(), R.string.copied_to_clipboard_failed, Snackbar.LENGTH_SHORT).show();
         }
     }
 

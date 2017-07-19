@@ -12,12 +12,14 @@
     <!--menu-->
     <string name="news">新闻</string>
     <string name="zhihu">知乎</string>
-    <string name="photo">图片</string>
-    <string name="video">视频</string>
+    <string name="collect">浏览记录</string>
+    <string name="scan">收藏</string>
     <string name="tools">设置</string>
     <string name="no_photo_mode">无图模式</string>
     <string name="night_mode">夜间模式</string>
     <string name="about">关于</string>
+    <string name="scollect">浏览记录</string>
+    <string name="sscan">收藏列表</string>
 
     <!-- 新闻 -->
     <string name="load_error">加载失败</string>

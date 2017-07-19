@@ -6,7 +6,7 @@ import java.util.List;
  * Create by threelu on 2017/1/16.
  */
 
-public class NewsSummary {
+public class NewsSummary{
     private String postid;
     private boolean hasCover;
     private int hasHead;
